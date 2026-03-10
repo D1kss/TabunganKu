@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TabunganKu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+</head>
+<body>
+
+<!-- ===== CONFETTI CANVAS ===== -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div id="toast" class="toast">
+  <span id="toast-icon">💡</span>
+  <span id="toast-msg">Pesan motivasi</span>
+</div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">💰</div>
+    <span class="brand-name">TabunganKu</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-section="dashboard">
+      <span class="nav-icon">📊</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-section="transaksi">
+      <span class="nav-icon">➕</span>
+      <span>Tambah Transaksi</span>
+    </a>
+    <a href="#" class="nav-item" data-section="target">
+      <span class="nav-icon">🎯</span>
+      <span>Target Tabungan</span>
+    </a>
+    <a href="#" class="nav-item" data-section="riwayat">
+      <span class="nav-icon">📋</span>
+      <span>Riwayat</span>
+    </a>
+    <a href="#" class="nav-item" data-section="grafik">
+      <span class="nav-icon">📈</span>
+      <span>Grafik</span>
+    </a>
+    <a href="#" class="nav-item" data-section="badge">
+      <span class="nav-icon">🏆</span>
+      <span>Pencapaian</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <!-- User Info Card -->
+    <div class="user-card" id="user-card">
+      <div class="user-avatar" id="user-avatar">👤</div>
+      <div class="user-info">
+        <p class="user-name"  id="user-name">Pengguna</p>
+        <p class="user-email" id="user-email">—</p>
+      </div>
+    </div>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-row">
+      <span>🌙 Dark Mode</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="darkModeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <!-- Export CSV -->
+    <button class="btn-export" onclick="exportCSV()">⬇️ Export CSV</button>
+    <!-- Logout -->
+    <button class="btn-logout" onclick="logout()">🚪 Keluar</button>
+  </div>
+</aside>
+
+<!-- ===== MOBILE TOPBAR ===== -->
+<header class="topbar">
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+  <span class="topbar-title">TabunganKu</span>
+  <label class="toggle-switch small">
+    <input type="checkbox" id="darkModeToggleMobile" />
+    <span class="slider"></span>
+  </label>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-content">
+
+  <!-- ========== SECTION: DASHBOARD ========== -->
+  <section class="section active" id="sec-dashboard">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Dashboard</h1>
+        <p class="section-sub">Selamat datang kembali! 👋</p>
+      </div>
+      <div class="date-badge" id="current-date"></div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="cards-grid">
+      <div class="stat-card card-saldo">
+        <div class="card-icon">💳</div>
+        <div class="card-body">
+          <p class="card-label">Total Saldo</p>
+          <h2 class="card-value" id="stat-saldo">Rp 0</h2>
+          <p class="card-delta" id="delta-saldo"></p>
+        </div>
+        <div class="card-bg-shape"></div>
+      </div>
+
+      <div class="stat-card card-income">
+        <div class="card-icon">📥</div>
+        <div class="card-body">
+          <p class="card-label">Total Pemasukan</p>
+          <h2 class="card-value" id="stat-income">Rp 0</h2>
+        </div>
+        <div class="card-bg-shape"></div>
+      </div>
+
+      <div class="stat-card card-expense">
+        <div class="card-icon">📤</div>
+        <div class="card-body">
+          <p class="card-label">Total Pengeluaran</p>
+          <h2 class="card-value" id="stat-expense">Rp 0</h2>
+        </div>
+        <div class="card-bg-shape"></div>
+      </div>
+
+      <div class="stat-card card-target">
+        <div class="card-icon">🎯</div>
+        <div class="card-body">
+          <p class="card-label">Target Tabungan</p>
+          <h2 class="card-value" id="stat-target">Rp 0</h2>
+          <p class="card-delta" id="delta-target"></p>
+        </div>
+        <div class="card-bg-shape"></div>
+      </div>
+    </div>
+
+    <!-- Mini Progress -->
+    <div class="mini-progress-card">
+      <div class="mini-progress-header">
+        <span>🎯 Progress Target</span>
+        <span id="mini-progress-pct">0%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="mini-progress-bar"></div>
+      </div>
+      <p class="mini-progress-note" id="mini-progress-note">Belum ada target. Yuk set target tabunganmu!</p>
+    </div>
+
+    <!-- Quick Chart -->
+    <div class="chart-card">
+      <h3 class="chart-title">📈 Ringkasan Keuangan</h3>
+      <canvas id="dashChart" height="200"></canvas>
+    </div>
+  </section>
+
+  <!-- ========== SECTION: TAMBAH TRANSAKSI ========== -->
+  <section class="section" id="sec-transaksi">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Tambah Transaksi</h1>
+        <p class="section-sub">Catat pemasukan dan pengeluaranmu</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <!-- Pemasukan -->
+      <div class="form-card form-income">
+        <div class="form-card-header">
+          <span class="form-badge income-badge">📥 Pemasukan</span>
+        </div>
+        <div class="input-group">
+          <label>Keterangan</label>
+          <input type="text" id="inc-desc" placeholder="cth: Gaji Januari" />
+        </div>
+        <div class="input-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="inc-amount" placeholder="cth: 5000000" min="0" />
+        </div>
+        <div class="input-group">
+          <label>Tanggal</label>
+          <input type="date" id="inc-date" />
+        </div>
+        <button class="btn-primary btn-income-add" onclick="addTransaction('income')">
+          ➕ Tambah Pemasukan
+        </button>
+      </div>
+
+      <!-- Pengeluaran -->
+      <div class="form-card form-expense">
+        <div class="form-card-header">
+          <span class="form-badge expense-badge">📤 Pengeluaran</span>
+        </div>
+        <div class="input-group">
+          <label>Keterangan</label>
+          <input type="text" id="exp-desc" placeholder="cth: Belanja bulanan" />
+        </div>
+        <div class="input-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="exp-amount" placeholder="cth: 500000" min="0" />
+        </div>
+        <div class="input-group">
+          <label>Tanggal</label>
+          <input type="date" id="exp-date" />
+        </div>
+        <button class="btn-primary btn-expense-add" onclick="addTransaction('expense')">
+          ➕ Tambah Pengeluaran
+        </button>
+      </div>
+
+      <!-- Target Tabungan -->
+      <div class="form-card form-target full-width">
+        <div class="form-card-header">
+          <span class="form-badge target-badge">🎯 Target Tabungan</span>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Nama Target</label>
+            <input type="text" id="target-name" placeholder="cth: Beli Laptop" />
+          </div>
+          <div class="input-group">
+            <label>Jumlah Target (Rp)</label>
+            <input type="number" id="target-amount" placeholder="cth: 10000000" min="0" />
+          </div>
+          <button class="btn-primary btn-target-set" onclick="setTarget()">
+            🎯 Set Target
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION: TARGET ========== -->
+  <section class="section" id="sec-target">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Target Tabungan</h1>
+        <p class="section-sub">Pantau progres menabungmu 🚀</p>
+      </div>
+    </div>
+
+    <div class="target-card">
+      <div class="target-name-row">
+        <span class="target-icon">🎯</span>
+        <h2 id="target-display-name">Belum ada target</h2>
+      </div>
+
+      <div class="target-amounts">
+        <div class="amount-box">
+          <p>Saldo Saat Ini</p>
+          <h3 id="target-current-val">Rp 0</h3>
+        </div>
+        <div class="amount-divider">→</div>
+        <div class="amount-box">
+          <p>Target</p>
+          <h3 id="target-goal-val">Rp 0</h3>
+        </div>
+      </div>
+
+      <div class="big-progress-wrap">
+        <div class="big-progress-fill" id="big-progress-bar"></div>
+        <span class="big-progress-label" id="big-progress-label">0%</span>
+      </div>
+
+      <p class="target-message" id="target-message">Set target untuk mulai menabung!</p>
+
+      <div class="milestone-row" id="milestone-row">
+        <!-- milestone badges will be injected here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION: RIWAYAT ========== -->
+  <section class="section" id="sec-riwayat">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Riwayat Transaksi</h1>
+        <p class="section-sub">Semua transaksimu tercatat di sini</p>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all" onclick="filterTx('all', this)">Semua</button>
+      <button class="filter-btn" data-filter="income" onclick="filterTx('income', this)">📥 Pemasukan</button>
+      <button class="filter-btn" data-filter="expense" onclick="filterTx('expense', this)">📤 Pengeluaran</button>
+    </div>
+
+    <div class="tx-list" id="tx-list">
+      <!-- transactions injected here -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">🗂️</div>
+        <p>Belum ada transaksi. Yuk catat keuanganmu!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION: GRAFIK ========== -->
+  <section class="section" id="sec-grafik">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Grafik Keuangan</h1>
+        <p class="section-sub">Visualisasi pemasukan vs pengeluaran</p>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card big-chart">
+        <h3 class="chart-title">📊 Pemasukan vs Pengeluaran (per Bulan)</h3>
+        <canvas id="barChart" height="250"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">🍩 Distribusi Keuangan</h3>
+        <canvas id="doughnutChart" height="250"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION: BADGE ========== -->
+  <section class="section" id="sec-badge">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Pencapaian 🏆</h1>
+        <p class="section-sub">Badge yang kamu raih dalam perjalanan menabung</p>
+      </div>
+    </div>
+
+    <div class="badges-grid" id="badges-grid">
+      <!-- badges injected -->
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== OVERLAY ===== -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

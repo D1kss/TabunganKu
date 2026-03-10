@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TabunganKu — Masuk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #3b6bff;
+      --blue2:      #5b87ff;
+      --purple:     #7c3aed;
+      --purple2:    #a855f7;
+      --teal:       #0ea5e9;
+      --green:      #10b981;
+      --text:       #0f172a;
+      --text2:      #475569;
+      --text3:      #94a3b8;
+      --surface:    #ffffff;
+      --border:     #e2e8f0;
+      --bg:         #f8faff;
+      --error:      #ef4444;
+      --success:    #10b981;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ===== LAYOUT WRAPPER ===== */
+    .auth-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       LEFT PANEL — Ilustrasi & Branding
+    ============================================ */
+    .left-panel {
+      position: relative;
+      background: linear-gradient(145deg, #0a0e2e 0%, #0d1b5e 40%, #1a0a4e 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 48px;
+    }
+
+    /* Mesh gradient blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      animation: blobFloat 8s ease-in-out infinite;
+    }
+    .blob-1 { width: 500px; height: 500px; background: #3b6bff; top: -100px; left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 400px; height: 400px; background: #7c3aed; bottom: -80px; right: -100px; animation-delay: 3s; }
+    .blob-3 { width: 300px; height: 300px; background: #0ea5e9; top: 40%; left: 30%; animation-delay: 1.5s; }
+
+    @keyframes blobFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(20px, -30px) scale(1.05); }
+      66%       { transform: translate(-15px, 20px) scale(.97); }
+    }
+
+    /* Noise texture overlay */
+    .noise {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Floating cards */
+    .float-cards { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
+    .fcard {
+      position: absolute;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      padding: 16px 20px;
+      animation: cardFloat linear infinite;
+    }
+
+    .fcard-1 { width: 200px; top: 12%; left: 8%;  animation-duration: 14s; animation-delay: 0s; }
+    .fcard-2 { width: 170px; top: 60%; left: 5%;  animation-duration: 18s; animation-delay: 2s; }
+    .fcard-3 { width: 185px; top: 30%; right: 8%; animation-duration: 16s; animation-delay: 1s; }
+    .fcard-4 { width: 155px; bottom: 15%; right: 12%; animation-duration: 12s; animation-delay: 3s; }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50%       { transform: translateY(-18px) rotate(1deg); }
+    }
+
+    .fcard-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .fcard-value { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: white; }
+    .fcard-sub   { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 4px; }
+    .fcard-dot   { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+    .dot-green   { background: #10b981; box-shadow: 0 0 6px #10b981; }
+    .dot-red     { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+    /* Progress mini in card */
+    .fcard-bar-wrap { background: rgba(255,255,255,.15); border-radius: 99px; height: 5px; margin-top: 8px; }
+    .fcard-bar      { height: 5px; border-radius: 99px; background: linear-gradient(90deg,#3b6bff,#a855f7); }
+
+    /* Grid dots pattern */
+    .dot-grid {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.12) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Diagonal line accent */
+    .diag-line {
+      position: absolute;
+      width: 2px; height: 300px;
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,.18), transparent);
+      transform: rotate(30deg);
+    }
+    .diag-1 { top: 10%; left: 45%; }
+    .diag-2 { top: 30%; left: 70%; }
+
+    /* Brand content */
+    .left-content {
+      position: relative; z-index: 2;
+      text-align: center; max-width: 420px;
+    }
+
+    .brand-logo {
+      display: inline-flex; align-items: center; gap: 14px;
+      margin-bottom: 40px;
+    }
+    .brand-logo-icon {
+      width: 60px; height: 60px; border-radius: 18px;
+      background: linear-gradient(135deg, var(--blue), var(--purple2));
+      display: grid; place-items: center;
+      font-size: 28px;
+      box-shadow: 0 8px 32px rgba(59,107,255,.5);
+    }
+    .brand-logo-name {
+      font-size: 26px; font-weight: 800; color: white; letter-spacing: -.5px;
+    }
+    .brand-logo-tag {
+      font-size: 11px; font-weight: 500; color: rgba(255,255,255,.45);
+      text-transform: uppercase; letter-spacing: 2px; margin-top: 2px;
+    }
+
+    .left-headline {
+      font-size: 38px; font-weight: 800; color: white;
+      line-height: 1.2; letter-spacing: -.8px; margin-bottom: 16px;
+    }
+    .left-headline span {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .left-sub { font-size: 15px; color: rgba(255,255,255,.55); line-height: 1.7; margin-bottom: 40px; }
+
+    .left-stats {
+      display: flex; gap: 32px; justify-content: center;
+    }
+    .lstat { text-align: center; }
+    .lstat-value { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; color: white; }
+    .lstat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+    .lstat-div   { width: 1px; background: rgba(255,255,255,.12); }
+
+    /* Animated number */
+    @keyframes numCount {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lstat-value { animation: numCount .8s ease both; }
+
+    /* ============================================
+       RIGHT PANEL — Auth Form
+    ============================================ */
+    .right-panel {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 52px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    /* Subtle top stripe */
+    .right-panel::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--purple2), var(--teal));
+    }
+
+    /* Tab switcher */
+    .tab-bar {
+      display: flex;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 36px;
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1; padding: 10px 16px;
+      border: none; background: none;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--text3);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all .25s ease;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--blue);
+      box-shadow: 0 2px 12px rgba(59,107,255,.15);
+    }
+
+    /* Form title */
+    .form-title    { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 6px; }
+    .form-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 32px; line-height: 1.6; }
+    .form-subtitle a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+    /* Input fields */
+    .field { margin-bottom: 18px; }
+
+    .field-label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: var(--text2); text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 8px;
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    .field-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; pointer-events: none;
+      transition: all .2s;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 42px 13px 42px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px; color: var(--text);
+      outline: none;
+      transition: all .25s ease;
+    }
+
+    .field-input:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59,107,255,.1);
+    }
+
+    .field-input::placeholder { color: var(--text3); }
+
+    /* Eye toggle */
+    .eye-btn {
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; color: var(--text3);
+      transition: color .2s;
+      padding: 2px;
+    }
+    .eye-btn:hover { color: var(--blue); }
+
+    /* Password strength */
+    .strength-bar {
+      display: flex; gap: 4px; margin-top: 8px;
+    }
+    .strength-seg {
+      flex: 1; height: 3px; border-radius: 99px;
+      background: var(--border);
+      transition: background .4s ease;
+    }
+    .strength-text { font-size: 11px; color: var(--text3); margin-top: 5px; }
+
+    /* Error message */
+    .field-error {
+      font-size: 11px; color: var(--error);
+      margin-top: 5px; display: none;
+      animation: fadeIn .2s ease;
+    }
+    .field-error.show { display: block; }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Checkbox row */
+    .check-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px; font-size: 13px; color: var(--text2);
+    }
+    .check-row input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer;
+    }
+    .check-row a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+    .forgot-link {
+      font-size: 12px; color: var(--blue); text-decoration: none; font-weight: 600;
+      float: right; margin-top: -14px; margin-bottom: 18px;
+      transition: opacity .2s;
+    }
+    .forgot-link:hover { opacity: .7; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--blue), var(--purple2));
+      border: none; border-radius: 12px;
+      color: white; font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      transition: all .28s ease;
+      box-shadow: 0 6px 24px rgba(59,107,255,.35);
+      position: relative; overflow: hidden;
+      letter-spacing: .2px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(59,107,255,.5);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    /* Button shimmer */
+    .btn-submit::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+      transform: skewX(-20deg);
+      transition: left .6s ease;
+    }
+    .btn-submit:hover::after { left: 160%; }
+
+    /* Loading state */
+    .btn-submit.loading {
+      pointer-events: none; opacity: .8;
+    }
+    .btn-submit.loading::before {
+      content: '';
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .or-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0; color: var(--text3); font-size: 12px; font-weight: 500;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Social buttons */
+    .social-row { display: flex; gap: 10px; }
+
+    .btn-social {
+      flex: 1; padding: 11px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+      color: var(--text2);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all .25s;
+    }
+    .btn-social:hover { border-color: var(--blue); color: var(--blue); background: white; }
+    .btn-social img { width: 18px; height: 18px; }
+
+    /* Toast inside form */
+    .form-toast {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 12px 16px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px;
+      opacity: 0; transform: translateY(-8px);
+      transition: all .3s ease;
+      pointer-events: none;
+    }
+    .form-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .form-toast.success { border-color: var(--success); color: var(--success); background: #f0fdf4; }
+    .form-toast.error   { border-color: var(--error);   color: var(--error);   background: #fef2f2; }
+
+    /* Form panels */
+    .form-panel { display: none; }
+    .form-panel.active { display: block; animation: panelIn .3s ease; }
+    @keyframes panelIn { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
+
+    /* Footer */
+    .right-footer {
+      margin-top: 28px; text-align: center;
+      font-size: 12px; color: var(--text3);
+    }
+    .right-footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+
+    /* Avatar upload (register) */
+    .avatar-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .avatar-preview {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--blue), var(--purple2));
+      display: grid; place-items: center;
+      font-size: 24px; flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-info { flex: 1; }
+    .avatar-info p { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .avatar-info span { font-size: 11px; color: var(--text3); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .auth-wrapper { grid-template-columns: 1fr; }
+      .left-panel { min-height: 280px; padding: 40px 24px; }
+      .left-headline { font-size: 26px; }
+      .fcard-1, .fcard-2, .fcard-3, .fcard-4 { display: none; }
+      .left-stats { gap: 20px; }
+      .right-panel { padding: 36px 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .right-panel { padding: 28px 20px; }
+      .form-title { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+
+  <!-- ============ LEFT PANEL ============ -->
+  <div class="left-panel">
+    <div class="noise"></div>
+    <div class="dot-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="diag-line diag-1"></div>
+    <div class="diag-line diag-2"></div>
+
+    <!-- Floating Cards -->
+    <div class="float-cards">
+      <div class="fcard fcard-1">
+        <div class="fcard-label">💰 Total Tabungan</div>
+        <div class="fcard-value">Rp 8.500.000</div>
+        <div class="fcard-bar-wrap"><div class="fcard-bar" style="width:72%"></div></div>
+        <div class="fcard-sub">72% dari target</div>
+      </div>
+
+      <div class="fcard fcard-2">
+        <div class="fcard-label">📥 Pemasukan Bulan Ini</div>
+        <div class="fcard-value">Rp 5.200.000</div>
+        <div class="fcard-sub"><span class="fcard-dot dot-green"></span>+12% dari bulan lalu</div>
+      </div>
+
+      <div class="fcard fcard-3">
+        <div class="fcard-label">🎯 Target Beli Rumah</div>
+        <div class="fcard-value">Rp 500 juta</div>
+        <div class="fcard-bar-wrap"><div class="fcard-bar" style="width:34%"></div></div>
+        <div class="fcard-sub">34% tercapai</div>
+      </div>
+
+      <div class="fcard fcard-4">
+        <div class="fcard-label">📤 Pengeluaran</div>
+        <div class="fcard-value">Rp 2.100.000</div>
+        <div class="fcard-sub"><span class="fcard-dot dot-red"></span>-5% efisiensi</div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="left-content">
+      <div class="brand-logo">
+        <div class="brand-logo-icon">💰</div>
+        <div>
+          <div class="brand-logo-name">TabunganKu</div>
+          <div class="brand-logo-tag">Smart Savings</div>
+        </div>
+      </div>
+
+      <h1 class="left-headline">
+        Kelola Keuangan<br/>
+        <span>Lebih Cerdas</span><br/>
+        & Terstruktur
+      </h1>
+
+      <p class="left-sub">
+        Catat pemasukan, pantau pengeluaran, dan capai target tabunganmu dengan mudah. Kebebasan finansial dimulai dari sini.
+      </p>
+
+      <div class="left-stats">
+        <div class="lstat">
+          <div class="lstat-value" style="animation-delay:.1s">10K+</div>
+          <div class="lstat-label">Pengguna</div>
+        </div>
+        <div class="lstat-div"></div>
+        <div class="lstat">
+          <div class="lstat-value" style="animation-delay:.25s">Rp 2M+</div>
+          <div class="lstat-label">Ditabung</div>
+        </div>
+        <div class="lstat-div"></div>
+        <div class="lstat">
+          <div class="lstat-value" style="animation-delay:.4s">98%</div>
+          <div class="lstat-label">Puas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RIGHT PANEL ============ -->
+  <div class="right-panel">
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-login"    onclick="switchTab('login')">Masuk</button>
+      <button class="tab-btn"        id="tab-register" onclick="switchTab('register')">Daftar Akun</button>
+    </div>
+
+    <!-- Alert toast -->
+    <div class="form-toast" id="form-toast">
+      <span id="toast-icon">✅</span>
+      <span id="toast-text">Pesan</span>
+    </div>
+
+    <!-- ===== LOGIN FORM ===== -->
+    <div class="form-panel active" id="panel-login">
+      <h2 class="form-title">Selamat datang kembali 👋</h2>
+      <p class="form-subtitle">Masuk ke akun TabunganKu-mu dan lanjutkan perjalanan menabung.</p>
+
+      <!-- Email -->
+      <div class="field">
+        <label class="field-label">Email</label>
+        <div class="field-wrap">
+          <span class="field-icon">📧</span>
+          <input class="field-input" type="email" id="login-email" placeholder="nama@email.com" autocomplete="email" />
+        </div>
+        <span class="field-error" id="err-login-email">Email tidak valid.</span>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label class="field-label">Kata Sandi</label>
+        <div class="field-wrap">
+          <span class="field-icon">🔑</span>
+          <input class="field-input" type="password" id="login-pass" placeholder="Masukkan kata sandi" autocomplete="current-password" />
+          <button class="eye-btn" onclick="toggleEye('login-pass', this)" type="button">👁️</button>
+        </div>
+        <span class="field-error" id="err-login-pass">Kata sandi tidak boleh kosong.</span>
+      </div>
+
+      <!-- Remember + Forgot -->
+      <div class="check-row">
+        <input type="checkbox" id="remember" />
+        <label for="remember">Ingat saya</label>
+      </div>
+      <a href="#" class="forgot-link" onclick="forgotPassword(event)">Lupa sandi?</a>
+
+      <!-- Submit -->
+      <button class="btn-submit" id="btn-login" onclick="handleLogin()">
+        Masuk Sekarang
+      </button>
+
+      <div class="or-divider">atau lanjutkan dengan</div>
+
+      <div class="social-row">
+        <button class="btn-social" onclick="socialLogin('Google')">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="btn-social" onclick="socialLogin('GitHub')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== REGISTER FORM ===== -->
+    <div class="form-panel" id="panel-register">
+      <h2 class="form-title">Buat akun baru ✨</h2>
+      <p class="form-subtitle">Bergabung dengan TabunganKu dan mulai perjalanan menabungmu hari ini.</p>
+
+      <!-- Nama -->
+      <div class="field">
+        <label class="field-label">Nama Lengkap</label>
+        <div class="field-wrap">
+          <span class="field-icon">👤</span>
+          <input class="field-input" type="text" id="reg-name" placeholder="Nama kamu" autocomplete="name" />
+        </div>
+        <span class="field-error" id="err-reg-name">Nama tidak boleh kosong.</span>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label class="field-label">Email</label>
+        <div class="field-wrap">
+          <span class="field-icon">📧</span>
+          <input class="field-input" type="email" id="reg-email" placeholder="nama@email.com" autocomplete="email" />
+        </div>
+        <span class="field-error" id="err-reg-email">Masukkan email yang valid.</span>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label class="field-label">Kata Sandi</label>
+        <div class="field-wrap">
+          <span class="field-icon">🔑</span>
+          <input class="field-input" type="password" id="reg-pass" placeholder="Min. 8 karakter" autocomplete="new-password" oninput="checkStrength(this.value)" />
+          <button class="eye-btn" onclick="toggleEye('reg-pass', this)" type="button">👁️</button>
+        </div>
+        <!-- Strength bar -->
+        <div class="strength-bar">
+          <div class="strength-seg" id="str-1"></div>
+          <div class="strength-seg" id="str-2"></div>
+          <div class="strength-seg" id="str-3"></div>
+          <div class="strength-seg" id="str-4"></div>
+        </div>
+        <div class="strength-text" id="str-text">Masukkan kata sandi</div>
+        <span class="field-error" id="err-reg-pass">Kata sandi min. 8 karakter.</span>
+      </div>
+
+      <!-- Konfirmasi Password -->
+      <div class="field">
+        <label class="field-label">Konfirmasi Kata Sandi</label>
+        <div class="field-wrap">
+          <span class="field-icon">🔒</span>
+          <input class="field-input" type="password" id="reg-pass2" placeholder="Ulangi kata sandi" autocomplete="new-password" />
+          <button class="eye-btn" onclick="toggleEye('reg-pass2', this)" type="button">👁️</button>
+        </div>
+        <span class="field-error" id="err-reg-pass2">Kata sandi tidak cocok.</span>
+      </div>
+
+      <!-- Terms -->
+      <div class="check-row">
+        <input type="checkbox" id="reg-terms" />
+        <label for="reg-terms">Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a></label>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-submit" id="btn-register" onclick="handleRegister()">
+        Buat Akun Gratis
+      </button>
+
+      <div class="or-divider">atau daftar dengan</div>
+
+      <div class="social-row">
+        <button class="btn-social" onclick="socialLogin('Google')">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="btn-social" onclick="socialLogin('GitHub')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </button>
+      </div>
+    </div>
+
+    <div class="right-footer">
+      Butuh bantuan? <a href="#">Hubungi Support</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TAB SWITCH — login ↔ register
+// ============================================================
+function switchTab(tab) {
+  document.getElementById('panel-login').classList.toggle('active',    tab === 'login');
+  document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+  document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  hideToast();
+}
+
+// ============================================================
+// TOGGLE PASSWORD VISIBILITY
+// ============================================================
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+// ============================================================
+// PASSWORD STRENGTH CHECK
+// ============================================================
+function checkStrength(val) {
+  let score = 0;
+  if (val.length >= 8)              score++;
+  if (/[A-Z]/.test(val))            score++;
+  if (/[0-9]/.test(val))            score++;
+  if (/[^A-Za-z0-9]/.test(val))     score++;
+
+  const colors = ['', '#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
+  const labels = ['', 'Sangat Lemah', 'Cukup', 'Kuat', 'Sangat Kuat'];
+
+  for (let i = 1; i <= 4; i++) {
+    const seg = document.getElementById('str-' + i);
+    seg.style.background = i <= score ? colors[score] : 'var(--border)';
+  }
+  document.getElementById('str-text').textContent = val.length ? labels[score] : 'Masukkan kata sandi';
+  document.getElementById('str-text').style.color  = val.length ? colors[score] : 'var(--text3)';
+}
+
+// ============================================================
+// SHOW / HIDE TOAST
+// ============================================================
+function showToast(type, icon, text) {
+  const t = document.getElementById('form-toast');
+  t.className = 'form-toast show ' + type;
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-text').textContent = text;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(hideToast, 4000);
+}
+function hideToast() {
+  document.getElementById('form-toast').classList.remove('show');
+}
+
+// ============================================================
+// VALIDATION HELPER
+// ============================================================
+function showErr(id, show) {
+  document.getElementById(id).classList.toggle('show', show);
+}
+
+function isValidEmail(e) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+}
+
+// ============================================================
+// HANDLE LOGIN
+// ============================================================
+function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  let valid   = true;
+
+  // Validasi
+  const emailOk = isValidEmail(email);
+  showErr('err-login-email', !emailOk);
+  if (!emailOk) valid = false;
+
+  const passOk = pass.length > 0;
+  showErr('err-login-pass', !passOk);
+  if (!passOk) valid = false;
+
+  if (!valid) return;
+
+  // Cek akun dari localStorage
+  const accounts = JSON.parse(localStorage.getItem('tabunganku_accounts') || '[]');
+  const user = accounts.find(a => a.email === email && a.password === pass);
+
+  if (!user) {
+    showToast('error', '❌', 'Email atau kata sandi salah.');
+    return;
+  }
+
+  // Loading state
+  const btn = document.getElementById('btn-login');
+  btn.classList.add('loading');
+  btn.textContent = '';
+
+  // Simpan sesi
+  const remember = document.getElementById('remember').checked;
+  const session  = { name: user.name, email: user.email, loggedIn: true };
+  if (remember) localStorage.setItem('tabunganku_session', JSON.stringify(session));
+  else          sessionStorage.setItem('tabunganku_session', JSON.stringify(session));
+
+  showToast('success', '✅', `Selamat datang kembali, ${user.name}!`);
+
+  // Redirect ke dashboard setelah animasi
+  setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+}
+
+// ============================================================
+// HANDLE REGISTER
+// ============================================================
+function handleRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const terms = document.getElementById('reg-terms').checked;
+  let valid   = true;
+
+  const nameOk = name.length >= 2;
+  showErr('err-reg-name', !nameOk);
+  if (!nameOk) valid = false;
+
+  const emailOk = isValidEmail(email);
+  showErr('err-reg-email', !emailOk);
+  if (!emailOk) valid = false;
+
+  const passOk = pass.length >= 8;
+  showErr('err-reg-pass', !passOk);
+  if (!passOk) valid = false;
+
+  const pass2Ok = pass === pass2 && pass.length > 0;
+  showErr('err-reg-pass2', !pass2Ok);
+  if (!pass2Ok) valid = false;
+
+  if (!valid) return;
+
+  if (!terms) {
+    showToast('error', '⚠️', 'Kamu harus menyetujui Syarat & Ketentuan.');
+    return;
+  }
+
+  // Cek duplikat email
+  const accounts = JSON.parse(localStorage.getItem('tabunganku_accounts') || '[]');
+  if (accounts.find(a => a.email === email)) {
+    showToast('error', '❌', 'Email sudah terdaftar. Coba masuk.');
+    return;
+  }
+
+  // Simpan akun baru
+  accounts.push({ name, email, password: pass, createdAt: new Date().toISOString() });
+  localStorage.setItem('tabunganku_accounts', JSON.stringify(accounts));
+
+  // Loading
+  const btn = document.getElementById('btn-register');
+  btn.classList.add('loading'); btn.textContent = '';
+
+  showToast('success', '🎉', `Akun berhasil dibuat! Selamat bergabung, ${name}!`);
+
+  // Auto login & redirect
+  const session = { name, email, loggedIn: true };
+  sessionStorage.setItem('tabunganku_session', JSON.stringify(session));
+
+  setTimeout(() => { window.location.href = 'index.html'; }, 1600);
+}
+
+// ============================================================
+// FORGOT PASSWORD (simulasi)
+// ============================================================
+function forgotPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  if (!email || !isValidEmail(email)) {
+    showToast('error', '⚠️', 'Masukkan email terlebih dahulu.');
+    return;
+  }
+  showToast('success', '📨', `Link reset dikirim ke ${email} (simulasi).`);
+}
+
+// ============================================================
+// SOCIAL LOGIN (simulasi)
+// ============================================================
+function socialLogin(provider) {
+  showToast('success', '🔗', `Login dengan ${provider} (fitur demo).`);
+}
+
+// ============================================================
+// AUTO REDIRECT — kalau sudah login langsung ke dashboard
+// ============================================================
+(function checkSession() {
+  const s = localStorage.getItem('tabunganku_session') || sessionStorage.getItem('tabunganku_session');
+  if (s) {
+    try {
+      const sess = JSON.parse(s);
+      if (sess.loggedIn) window.location.href = 'index.html';
+    } catch(e) {}
+  }
+})();
+</script>
+</body>
+</html>
